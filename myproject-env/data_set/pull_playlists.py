@@ -11,17 +11,18 @@ def classify_mood(row):
     loudness = (row['loudness'])/60 + 1
     speechiness = row['speechiness']
     tempo = (row['tempo'])/200
-    
+    # artist = row['track_artist']
+    title = row['track_name']
 
     # this normalizes the ranges to be more like 0-1
 
     acousticness = row['acousticness'] # probably least helpful
 
    
-
+    # elif (artist.strip().casefold() == 'kanye west'): 
+    #     mood = "Kanye"
     if (acousticness > 0.85 and danceability < 0.5) :
         mood = "Instrumental"
-    
     elif ((valence > 0.6 and valence < 0.75 and energy > 0.6 and tempo < 0.6)):
         mood = 'Happy'
     elif (valence > 0.6 and speechiness < 0.07 and danceability < 0.7):
@@ -52,6 +53,23 @@ def classify_mood(row):
     elif (danceability > 0.85) :
         mood = "Club Beats"
     
+    # what does low valence have in common: they all have high tempo
+    elif (valence < 0.2) :
+        if (energy < 0.5) :
+            mood = 'Slow Hype' # or maybe upbeat chill
+        else :
+            mood = 'Hype'
+    elif (title == 'Jukebox Joints (feat. Joe Fox & Kanye West)') :
+        mood = 'Slow Hype'
+    elif (title == 'The Devil Wears a Suit and Tie') :
+        mood = 'Country'
+    elif (title == 'i wanna be your girlfriend') :
+        mood = 'Extra Chill'
+    else :
+        mood = 'Rock'
+
+
+
     # elif () :
     #     mood = 'Unknown'
     
@@ -63,8 +81,7 @@ def classify_mood(row):
     #     mood = 'Excited'
     # elif valence < 0.4 and energy < 0.3 and speechiness < 0.3:
     #     mood = 'Lonely'
-    else:
-        mood = 'Unknown'
+
     return mood 
 
 
@@ -76,14 +93,15 @@ df['tempo'] = df['tempo']/200
 # Save to new file
 df.to_csv('updated_mood_data.csv', index=False)
 
-specific_songs = df[df['mood'] == 'Unknown']
+specific_songs = df[df['mood'] == 'Extra Chill']
+# specific_songs = df[df['mood'] == 'Low Happiness']
 
 # Then take a random sample of 50
 random_specific_50 = specific_songs
 # figure out how preprocess the data
-print(random_specific_50[['track_name', 'track_artist', 'valence', 'danceability', 'loudness', 'speechiness', 'tempo', 'mood', 'acousticness']])
+print(random_specific_50[['track_name', 'track_artist', 'energy', 'loudness', 'tempo', 'mood']]) # speechiness , danceability
 
 # 'track_name', 'track_artist', 'valence', 'energy', 'mood'
 # Preview
-print(df[['track_name', 'track_artist', 'valence', 'danceability', 'loudness', 'speechiness', 'tempo', 'mood']].sample(50))
-print(df[df['track_name'] == "Disease"])
+# print(df[['track_name', 'track_artist', 'valence', 'danceability', 'loudness', 'speechiness', 'tempo', 'mood']].sample(50))
+# print(df[df['track_name'] == "Disease"])
